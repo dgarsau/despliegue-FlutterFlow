@@ -7,9 +7,6 @@ on:
   push:
     branches: ["flutterflow"]
 
-permissions:
-  contents: write
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -32,12 +29,22 @@ jobs:
 
       - name: Deploy to Pages repository
         run: |
-          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/dgarsau/dgarsau.github.io pages-repo
+          # Clona el repo de Pages usando tu ACCESS_TOKEN
+          git clone https://x-access-token:${{ secrets.ACCESS_TOKEN }}@github.com/dgarsau/dgarsau.github.io pages-repo
+
+          # Borra contenido viejo
           rm -rf pages-repo/*
+
+          # Copia la nueva build
           cp -r build/web/* pages-repo/
+
           cd pages-repo
+
+          # Configura usuario de Git
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Agrega cambios y pushea
           git add .
-          git commit -m "Deploy Flutter Web"
+          git commit -m "Deploy Flutter Web" || echo "No hay cambios que commitear"
           git push
