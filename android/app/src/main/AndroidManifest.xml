@@ -5,7 +5,7 @@
 
 
     <application
-        android:label="despliegue"
+        android:label="Despliegue"
         tools:replace="android:label"
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true">
