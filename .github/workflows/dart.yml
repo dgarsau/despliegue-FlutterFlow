@@ -3,12 +3,12 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
+name: Build Flutter Web and Deploy to Pages Repo
+
 on:
   push:
-    branches: ["flutterflow"]
-
-permissions:
-  contents: write
+    branches:
+      - flutterflow
 
 jobs:
   build-and-deploy:
@@ -32,8 +32,8 @@ jobs:
 
       - name: Deploy to Pages repository
         run: |
-          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/dgarsau/dgarsau.github.io pages-repo
-          rm -rf pages-repo/*
+          git clone https://x-access-token:${{ secrets.ACCESS_TOKEN }}@github.com/repositorio pages-repo
+          rm -r pages-repo/*
           cp -r build/web/* pages-repo/
           cd pages-repo
           git config user.name "github-actions[bot]"
