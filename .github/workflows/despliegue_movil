@@ -3,7 +3,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Build Flutter Web and Deploy to Pages Repo
+name: Build and Deploy Android
 
 on:
   push:
@@ -11,12 +11,18 @@ on:
       - flutterflow
 
 jobs:
-  build-and-deploy:
+  build-and-deploy-android:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source repo
+      - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -24,20 +30,25 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Install dependencies
+      - name: Get dependencies
         run: flutter pub get
 
-      - name: Build Flutter Web
-        run: flutter build web --release --base-href "/"
+      - name: Build APK (release)
+        run: flutter build apk --release
 
-      - name: Deploy to Pages repository
+      - name: Package APK
         run: |
-          git clone https://x-access-token:${{ secrets.ACCESS_TOKEN }}@github.com/dgarsau/dgarsau.github.io pages-repo
-          rm -r pages-repo/*
-          cp -r build/web/* pages-repo/
-          cd pages-repo
+          mkdir -p out
+          cp build/app/outputs/flutter-apk/app-release.apk out/ || true
+
+      - name: Deploy Android build
+        run: |
+          git clone https://x-access-token:${{ secrets.ACCESS_TOKEN }}@github.com/dgarsau/movil-FlutterFlow mobile-repo
+          rm -rf mobile-repo/*
+          cp out/app-release.apk mobile-repo/ || true
+          cd mobile-repo
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m "Deploy Flutter Web"
+          git commit -m "Deploy Android build"
           git push
