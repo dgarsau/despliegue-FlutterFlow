@@ -3,7 +3,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Build Flutter Web and Deploy to Pages Repo
+name: Build and Deploy Windows Desktop
 
 on:
   push:
@@ -11,11 +11,11 @@ on:
       - flutterflow
 
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+  build-and-deploy-windows:
+    runs-on: windows-latest
 
     steps:
-      - name: Checkout source repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Flutter
@@ -24,20 +24,31 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Build Flutter Web
-        run: flutter build web --release --base-href "/"
-
-      - name: Deploy to Pages repository
+      - name: Enable Windows desktop + install deps
         run: |
-          git clone https://x-access-token:${{ secrets.ACCESS_TOKEN }}@github.com/dgarsau/dgarsau.github.io pages-repo
-          rm -r pages-repo/*
-          cp -r build/web/* pages-repo/
-          cd pages-repo
+          flutter config --enable-windows-desktop
+          flutter doctor -v
+          flutter pub get
+
+      - name: Build Windows (Release)
+        run: flutter build windows --release
+
+      - name: Create ZIP
+        shell: pwsh
+        run: |
+          $out = "build/windows/x64/runner/Release"
+          if (!(Test-Path $out)) { throw "Build output not found: $out" }
+          Compress-Archive -Path "$out\*" -DestinationPath "windows-release.zip" -Force
+
+      - name: Deploy ZIP to repositoryDesktop
+        shell: bash
+        run: |
+          git clone https://x-access-token:${{ secrets.ACCESS_TOKEN }}@github.com/dgarsau/escritorio-FlutterFlow desktop-repo
+          rm -rf desktop-repo/*
+          cp windows-release.zip desktop-repo/
+          cd desktop-repo
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .
-          git commit -m "Deploy Flutter Web"
+          git commit -m "Deploy Windows build"
           git push
