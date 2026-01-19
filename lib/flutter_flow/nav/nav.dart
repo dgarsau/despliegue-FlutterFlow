@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '/backend/schema/enums/enums.dart';
+
 import '/flutter_flow/flutter_flow_util.dart';
 
 import '/index.dart';
@@ -33,17 +35,61 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
       debugLogDiagnostics: true,
       refreshListenable: appStateNotifier,
       navigatorKey: appNavigatorKey,
-      errorBuilder: (context, state) => HomePageWidget(),
+      errorBuilder: (context, state) => HomeWidget(),
       routes: [
         FFRoute(
           name: '_initialize',
           path: '/',
-          builder: (context, _) => HomePageWidget(),
+          builder: (context, _) => HomeWidget(),
         ),
         FFRoute(
-          name: HomePageWidget.routeName,
-          path: HomePageWidget.routePath,
-          builder: (context, params) => HomePageWidget(),
+          name: HomeWidget.routeName,
+          path: HomeWidget.routePath,
+          builder: (context, params) => HomeWidget(),
+        ),
+        FFRoute(
+          name: EditarWidget.routeName,
+          path: EditarWidget.routePath,
+          builder: (context, params) => EditarWidget(
+            jsonEditar: params.getParam(
+              'jsonEditar',
+              ParamType.JSON,
+            ),
+            tipo: params.getParam<Tipo>(
+              'tipo',
+              ParamType.Enum,
+            ),
+          ),
+        ),
+        FFRoute(
+          name: CrearWidget.routeName,
+          path: CrearWidget.routePath,
+          builder: (context, params) => CrearWidget(
+            tipo: params.getParam<Tipo>(
+              'tipo',
+              ParamType.Enum,
+            ),
+          ),
+        ),
+        FFRoute(
+          name: AsignaturasPorAlumnoWidget.routeName,
+          path: AsignaturasPorAlumnoWidget.routePath,
+          builder: (context, params) => AsignaturasPorAlumnoWidget(
+            alumnoJSON: params.getParam(
+              'alumnoJSON',
+              ParamType.JSON,
+            ),
+          ),
+        ),
+        FFRoute(
+          name: AlumnosPorAsignaturaWidget.routeName,
+          path: AlumnosPorAsignaturaWidget.routePath,
+          builder: (context, params) => AlumnosPorAsignaturaWidget(
+            asignaturaJSON: params.getParam(
+              'asignaturaJSON',
+              ParamType.JSON,
+            ),
+          ),
         )
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );
