@@ -462,7 +462,7 @@ class _HomeWidgetState extends State<HomeWidget> {
               Align(
                 alignment: AlignmentDirectional(1.0, 1.0),
                 child: Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 16.0),
+                  padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 16.0, 18.0),
                   child: FlutterFlowIconButton(
                     borderRadius: 8.0,
                     buttonSize: 50.0,
